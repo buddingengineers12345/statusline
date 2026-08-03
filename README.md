@@ -21,7 +21,7 @@ This repo ships two interchangeable implementations of the same statusline, `gri
 
 - **Contract**: read one JSON object from stdin, print plain text (with ANSI color codes) to stdout. No arguments, no network calls.
 - **Alignment trick**: terminal cells aren't 1-character-per-glyph. Emoji render 2 cells wide, braille dot-patterns render 1 cell wide, and variation selectors (like the `️` in `⚙️`) render 0 cells wide. Padding every column to a fixed *display width* — not string length — is what keeps the two `│` dividers lined up across all 5 rows even though each row mixes emoji and braille.
-- `grid.sh` precomputes the display width of every fixed label at write-time (there's no reason to reimplement Unicode width tables in bash for constants) and only computes width at runtime for the handful of data-dependent values (model id, effort level, style name), via `jq`'s `explode`.
+- `grid.sh` keeps all display-width math in a single `jq` function (`dw`, mirroring `grid.py`'s `display_width`) inside one `jq` invocation that extracts, measures, and pre-pads every field; bash itself never counts cells.
 
 ## Installation
 
@@ -67,8 +67,9 @@ Both scripts read the same fields from the input JSON, with the same defaults wh
 ## Gotchas
 
 - Emoji count as 2 terminal cells — naive `len()`/`${#s}`-based padding will misalign the grid the moment a label has an emoji in it.
-- The usage-bar fill count uses Python's banker's rounding (`round(2.5) == 2`, not 3) — `grid.sh` replicates round-half-to-even explicitly rather than the more common round-half-up.
-- `grid.sh` needs `jq`; `grid.py` needs nothing beyond the stdlib.
+- The usage-bar fill count uses Python's banker's rounding (`round(2.5) == 2`, not 3) — `grid.sh` gets the same round-half-to-even semantics from `jq`'s `rint`.
+- `grid.sh` needs bash ≥ 4.2 (`printf '%()T'`), `jq` ≥ 1.6 (`rint`), and GNU `date` (ISO `resets_at` only); `grid.py` needs nothing beyond the stdlib (Python ≥ 3.10).
+- `grid.sh`'s `jq` width table approximates Unicode East-Asian-Width/combining classes by block ranges; `grid.py`'s `unicodedata` is ground truth, so exotic codepoints can misalign by a cell in the bash version.
 - Some fields are absent rather than `null` depending on session state (e.g. no `rate_limits.seven_day` at all vs. `seven_day: {}`) — both scripts treat both cases as "hide this row."
 - A statusline script's stdout is captured, not a TTY, so `tput cols` won't report terminal width. Read the `$COLUMNS` env var instead if you need width-aware output.
 

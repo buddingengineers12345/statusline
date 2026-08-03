@@ -1,0 +1,86 @@
+# Project ruff config for statusline.
+#
+# SOURCE OF TRUTH: mirrors collection_template/template_python_project/pyproject.toml
+# [tool.ruff] / [tool.ruff.format] / [tool.ruff.lint] (the workspace-wide Python
+# standard). Ruff selects the nearest config wholesale — it does NOT merge with
+# ~/.config/ruff/ruff.toml — so the standard is restated here rather than inherited.
+# Only the per-file-ignores block is project-specific (see below).
+
+line-length = 100
+target-version = "py311"
+src = ["src", "tests"]
+
+[format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "auto"
+docstring-code-format = true
+
+[lint]
+select = [
+    "E",     # pycodestyle errors
+    "F",     # pyflakes
+    "I",     # isort
+    "UP",    # pyupgrade
+    "B",     # flake8-bugbear
+    "SIM",   # flake8-simplify
+    "C4",    # flake8-comprehensions
+    "RUF",   # ruff-specific rules
+    "TC",    # flake8-type-checking
+    "PGH",   # pygrep-hooks
+    "PT",    # flake8-pytest-style
+    "ARG",   # flake8-unused-arguments
+    "D",     # pydocstyle — enforce Google-style docstrings
+    "C90",   # McCabe complexity
+    "PERF",  # perflint — catch performance anti-patterns
+    "T20",   # flake8-print — discourage print() in non-test code
+    "T10",   # flake8-debugger — no committed breakpoint()/pdb
+    "N",     # pep8-naming — case conventions
+    "A",     # flake8-builtins — no shadowed builtins
+    "ERA",   # eradicate — no commented-out code
+    "TD",    # flake8-todos — well-formed TODO/FIXME markers
+    "DTZ",   # flake8-datetimez — no naive datetimes
+    "ASYNC", # flake8-async — no blocking calls in async code
+    "S",     # flake8-bandit — security patterns at edit time
+    "TRY",   # tryceratops — exception-handling hygiene
+    "G",     # flake8-logging-format — no f-string/interpolated log messages
+    "PTH",   # flake8-use-pathlib — pathlib over os.path
+    "FBT",   # flake8-boolean-trap — no boolean positional flags
+    "PL",    # pylint — complexity limits, magic values, eq/hash pairing
+    "ANN",   # flake8-annotations — typed public functions
+    "TID",   # flake8-tidy-imports — banned-api / relative-import policy
+    "BLE",   # flake8-blind-except — no bare broad catches
+]
+
+# Each ignore is deliberate (mirrors the template):
+# E501 — line length is enforced by ruff format, not ruff check
+# TRY003 — long exception messages are fine
+# ANN401 — Any is allowed at integration boundaries
+# TD002/TD003 — TODO author/issue-link mandates heavier than the house policy
+# FBT003 — positional booleans in third-party calls are outside caller control
+ignore = [
+    "E501",
+    "TRY003",
+    "ANN401",
+    "TD002",
+    "TD003",
+    "FBT003",
+]
+
+[lint.pydocstyle]
+convention = "google"
+
+[lint.mccabe]
+max-complexity = 10
+
+[lint.per-file-ignores]
+# grid.py embeds an assert-based --selfcheck self-test (documented CLI flag,
+# mirrored byte-for-byte in grid.sh) instead of a tests/ dir — the repo is
+# "just the scripts + sample.json + README" per AGENTS.md. These rules are the
+# self-test's idiom, not production concerns, and grid.py's production code
+# contains no asserts and no /tmp paths so the file-wide scope is safe:
+#   S101    — assert is the self-test's checking idiom
+#   S108    — "/tmp/demo" is a render fixture, not real temp-file usage
+#   PLR2004 — expected width literals (2/3) in self-test assertions
+#   DTZ001  — naive datetimes in render fixtures (statusline shows local time)
+"grid.py" = ["S101", "S108", "PLR2004", "DTZ001"]
