@@ -8,7 +8,7 @@
 
 line-length = 100
 target-version = "py311"
-src = ["src", "tests"]
+src = ["."]
 
 [format]
 quote-style = "double"
@@ -74,13 +74,30 @@ convention = "google"
 max-complexity = 10
 
 [lint.per-file-ignores]
-# grid.py embeds an assert-based --selfcheck self-test (documented CLI flag,
-# mirrored byte-for-byte in grid.sh) instead of a tests/ dir — the repo is
-# "just the scripts + sample.json + README" per AGENTS.md. These rules are the
-# self-test's idiom, not production concerns, and grid.py's production code
-# contains no asserts and no /tmp paths so the file-wide scope is safe:
-#   S101    — assert is the self-test's checking idiom
-#   S108    — "/tmp/demo" is a render fixture, not real temp-file usage
-#   PLR2004 — expected width literals (2/3) in self-test assertions
-#   DTZ001  — naive datetimes in render fixtures (statusline shows local time)
-"grid.py" = ["S101", "S108", "PLR2004", "DTZ001"]
+# Test files: these linting rules are expected idioms for pytest, not production concerns:
+#   S101    — assert is the standard testing idiom
+#   S108    — "/tmp/demo" is a test fixture path, not real temp-file usage
+#   PLR2004 — magic numbers in test comparisons are normal
+#   DTZ001  — naive datetimes in test fixtures (statusline shows local time)
+#   ANN201  — return type annotations optional on pytest fixtures
+#   PT006   — pytest parametrize collection-literal style
+#   ARG002  — unused arguments in fixtures are normal
+#   RUF003  — ambiguous unicode in comments is acceptable
+#   PLC0415 — import within function is acceptable for test setup
+"tests/*.py" = [
+    "S101",
+    "S108",
+    "PLR2004",
+    "DTZ001",
+    "ANN201",
+    "PT006",
+    "PT018",
+    "ARG002",
+    "RUF003",
+    "PLC0415",
+    "D100",
+    "D101",
+    "D102",
+    "D103",
+    "D104",
+]

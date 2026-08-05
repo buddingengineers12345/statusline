@@ -1,0 +1,103 @@
+# =============================================================================
+# Standardized .gitignore — canonical baseline for all agentspace repos.
+# Master copy: collection_template/templates/.gitignore
+# =============================================================================
+
+# ── OS-generated files ──
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# ── Editors & IDEs ──
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# ── Logs ──
+*.log
+*.log.*
+logs/
+
+# ── Python ──
+__pycache__/
+*.py[cod]
+*.so
+.venv/
+venv/
+ENV/
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+.coverage*
+htmlcov/
+
+# ── Node.js ──
+node_modules/
+npm-debug.log*
+
+# ── Environments & secrets ──
+.env
+.env.*
+*.env
+bootstrap.env
+!.env.example
+!.env.sample
+!.env.test.example
+!*.env.example
+credentials
+credentials.json
+service-account*.json
+secrets
+secrets.*
+secrets/
+*.key
+*.pem
+*.p8
+*.p12
+*.pfx
+*.keystore
+id_rsa
+id_ed25519
+.htpasswd
+.npmrc
+.pypirc
+*.sqlite
+*.sqlite3
+*.db
+
+# ── Data, backups, exports & scratch ──
+data/
+backups/
+exports/
+dumps/
+tmp/
+temp/
+.tmp/
+*.tmp
+*.temp
+*.bak
+*.backup
+
+# ── Local / private overrides ──
+config/local.*
+local.config.*
+settings.local.*
+private/
+internal/
+confidential/
+
+# ── Agent / Claude local (machine-local, never commit) ──
+.claude/skills/
+.claude/todos/
+.claude/worktrees/
+.claude/.cc-writes/
+.cursor/
+
+# ── Repo-specific ──
+backup.py
