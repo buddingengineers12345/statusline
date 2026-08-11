@@ -1,0 +1,1 @@
+/home/engineer/agentspace/.claude/agents/research-scout.md

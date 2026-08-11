@@ -6,7 +6,13 @@ A minimal, column-aligned Claude Code statusline — mascot, session state, and 
 
 ## About
 
-A Claude Code statusline is a small local script wired into `~/.claude/settings.json`. Claude Code runs it once per prompt, piping a JSON blob (model, effort, context/rate-limit usage, cwd) to its stdin and printing whatever it writes to stdout above the input box. It costs no API tokens — it's a local process, not a model call.
+A Claude Code statusline is a small local script wired into project or user
+`settings.json` (`statusLine`). In **agentspace**, the SSOT is
+`/home/engineer/agentspace/.claude/settings.json` pointing at
+`workspace_ops/status_line/grid.py` (this repo is the portable/testable copy).
+Claude Code runs it on session updates, piping a JSON blob (model, effort,
+context/rate-limit usage, cwd) to stdin and printing stdout above the input box.
+It costs no API tokens — it's a local process, not a model call.
 
 This repo ships `grid.py` plus `sample.json` to try it against.
 
@@ -45,7 +51,7 @@ python3 -m pytest tests/ -v
 | Field | Notes |
 |---|---|
 | `model.id` | default `?` |
-| `effort.level` | live value when the model supports effort; else `$CLAUDE_EFFORT`, else `~/.claude/settings.json` `effortLevel`, else `?` |
+| `effort.level` | live value when the model supports effort; else `$CLAUDE_EFFORT`, else project `.claude/settings.json` `effortLevel`, else `~/.claude/settings.json`, else `?` |
 | `thinking.enabled` | only actual JSON `true` → `on` |
 | `output_style.name` | default `default` |
 | `fast_mode` | only actual JSON `true` → `on` |

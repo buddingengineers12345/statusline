@@ -12,17 +12,21 @@ python3 grid.py < sample.json
 python3 -m pytest tests/ -v
 ```
 
-Wire into Claude Code via `~/.claude/settings.json`:
+Wire into Claude Code via the **project** settings (agentspace SSOT:
+`/home/engineer/agentspace/.claude/settings.json`), not `~/.claude/settings.json`:
 
 ```json
 {
   "statusLine": {
     "type": "command",
-    "command": "python3 /path/to/statusline/grid.py",
+    "command": "python3 /home/engineer/agentspace/workspace_ops/status_line/grid.py",
     "refreshInterval": 30
   }
 }
 ```
+
+Live agentspace wiring uses `workspace_ops/status_line/grid.py` (this `statusline/`
+repo is the portable/minimal copy for tests and standalone use).
 
 ## Code style
 
@@ -35,7 +39,8 @@ Wire into Claude Code via `~/.claude/settings.json`:
 - `grid.py`: Python ≥ 3.10, stdlib only.
 - Statusline stdout is not a TTY — do not use `tput cols`.
 - Contract: one JSON object on stdin, no network, no args required for normal render.
-- Effort resolution order: `effort.level` → `$CLAUDE_EFFORT` → settings `effortLevel` → `?`.
+- Effort resolution order: `effort.level` → `$CLAUDE_EFFORT` → project
+  `.claude/settings.json` `effortLevel` → `~/.claude/settings.json` → `?`.
 
 ## Testing instructions
 
