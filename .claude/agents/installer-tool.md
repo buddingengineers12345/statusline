@@ -1,1 +1,0 @@
-/home/engineer/agentspace/.claude/agents/installer-tool.md

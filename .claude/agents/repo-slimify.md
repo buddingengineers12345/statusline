@@ -1,1 +1,0 @@
-/home/engineer/agentspace/.claude/agents/repo-slimify.md
