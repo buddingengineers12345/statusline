@@ -14,13 +14,32 @@ Claude Code runs it on session updates, piping a JSON blob (model, effort,
 context/rate-limit usage, cwd) to stdin and printing stdout above the input box.
 It costs no API tokens — it's a local process, not a model call.
 
-This repo ships `grid.py` plus `sample.json` to try it against.
+This repo ships the `statusline` package (src layout) plus a zero-install
+`grid.py` launcher and `sample.json` to try it against.
 
 ## Features
 
 - Aligned 3-column grid: braille mascot | labeled state | usage bars, with the `│` dividers staying vertical across all 5 rows
 - Zero runtime deps — stdlib only
 - Pytest suite in `tests/`
+
+## Layout
+
+```
+pyproject.toml          # packaging + pytest + ruff config
+grid.py                 # zero-install launcher (puts src/ on sys.path)
+sample.json             # example stdin payload
+src/statusline/
+├── __init__.py         # public API (Status, extract_status_info, render_grid, ...)
+├── __main__.py         # python3 -m statusline
+├── config.py           # layout constants, labels, mascot, width tables
+├── models.py           # Status / ContextUsage / RateLimitUsage
+├── errors.py           # handle_exception decorator
+├── parsing.py          # payload → Status
+├── rendering.py        # Status → grid text
+└── cli.py              # stdin/stdout entry point
+tests/                  # test_parsing / test_rendering / test_cli
+```
 
 ## How it works
 
@@ -39,11 +58,15 @@ This repo ships `grid.py` plus `sample.json` to try it against.
 }
 ```
 
+No install is needed: `grid.py` bootstraps `src/` onto `sys.path`. An optional
+`pip install .` also provides a `statusline-grid` console script.
+
 ## Usage
 
 ```bash
-python3 grid.py < sample.json
-python3 -m pytest tests/ -v
+python3 grid.py < sample.json          # zero-install launcher
+PYTHONPATH=src python3 -m statusline < sample.json
+python3 -m pytest tests/ -v            # pythonpath=src comes from pyproject.toml
 ```
 
 ## Fields read

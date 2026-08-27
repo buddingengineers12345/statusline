@@ -101,3 +101,6 @@ confidential/
 
 # ── Repo-specific ──
 backup.py
+*.egg-info/
+dist/
+build/

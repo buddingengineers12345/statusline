@@ -1,22 +1,46 @@
-# Project ruff config for statusline.
+# statusline — packaging, pytest, and ruff configuration.
 #
-# SOURCE OF TRUTH: mirrors collection_template/template_python_project/pyproject.toml
+# Ruff SOURCE OF TRUTH: mirrors collection_template/template_python_project/pyproject.toml
 # [tool.ruff] / [tool.ruff.format] / [tool.ruff.lint] (the workspace-wide Python
 # standard). Ruff selects the nearest config wholesale — it does NOT merge with
 # ~/.config/ruff/ruff.toml — so the standard is restated here rather than inherited.
 # Only the per-file-ignores block is project-specific (see below).
 
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "statusline"
+version = "1.0.0"
+description = "Column-aligned grid statusline for Claude Code (stdin JSON -> stdout grid)"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+dependencies = []
+
+[project.scripts]
+statusline-grid = "statusline.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+
+[tool.ruff]
 line-length = 100
 target-version = "py311"
-src = ["."]
+src = ["src", "tests"]
 
-[format]
+[tool.ruff.format]
 quote-style = "double"
 indent-style = "space"
 line-ending = "auto"
 docstring-code-format = true
 
-[lint]
+[tool.ruff.lint]
 select = [
     "E",     # pycodestyle errors
     "F",     # pyflakes
@@ -67,13 +91,13 @@ ignore = [
     "FBT003",
 ]
 
-[lint.pydocstyle]
+[tool.ruff.lint.pydocstyle]
 convention = "google"
 
-[lint.mccabe]
+[tool.ruff.lint.mccabe]
 max-complexity = 10
 
-[lint.per-file-ignores]
+[tool.ruff.lint.per-file-ignores]
 # Test files: these linting rules are expected idioms for pytest, not production concerns:
 #   S101    — assert is the standard testing idiom
 #   S108    — "/tmp/demo" is a test fixture path, not real temp-file usage
