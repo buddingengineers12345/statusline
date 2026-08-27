@@ -12,7 +12,7 @@ from statusline.models import RateLimitUsage, Status
 class TestHandleException:
     def test_returns_fresh_copy_of_mutable_default(self) -> None:
         @handle_exception({}, ValueError)
-        def boom() -> dict:
+        def boom() -> dict[str, int]:
             raise ValueError("nope")
 
         a, b = boom(), boom()
@@ -64,8 +64,10 @@ class TestProcessPercent:
 class TestParseResetsAt:
     def test_epoch_int_and_string(self) -> None:
         ts = 1785665340
-        assert int(parsing._parse_resets_at(ts).timestamp()) == ts
-        assert int(parsing._parse_resets_at(str(ts)).timestamp()) == ts
+        from_int = parsing._parse_resets_at(ts)
+        from_str = parsing._parse_resets_at(str(ts))
+        assert from_int is not None and int(from_int.timestamp()) == ts
+        assert from_str is not None and int(from_str.timestamp()) == ts
 
     def test_iso_and_suffix_truncation(self) -> None:
         assert parsing._parse_resets_at("2026-08-02T15:29:00") == datetime(2026, 8, 2, 15, 29, 0)

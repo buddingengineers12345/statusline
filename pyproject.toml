@@ -25,13 +25,18 @@ statusline-grid = "statusline.cli:main"
 [tool.setuptools.packages.find]
 where = ["src"]
 
+[tool.setuptools.package-data]
+statusline = ["py.typed"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["src"]
 
 [tool.ruff]
 line-length = 100
-target-version = "py311"
+# py310, not the template's py311: it must match requires-python (>=3.10) so
+# pyupgrade never suggests 3.11-only syntax the declared floor can't run.
+target-version = "py310"
 src = ["src", "tests"]
 
 [tool.ruff.format]

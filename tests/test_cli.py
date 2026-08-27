@@ -6,7 +6,7 @@ from io import StringIO
 import pytest
 
 from statusline import cli, parsing, rendering
-from tests.conftest import assert_dividers_align
+from tests.helpers import assert_dividers_align
 
 
 class TestLoadDataAndMain:

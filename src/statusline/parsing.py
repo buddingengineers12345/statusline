@@ -17,14 +17,14 @@ from statusline.errors import handle_exception
 from statusline.models import ContextUsage, RateLimitUsage, Status
 
 
-def _as_dict(obj: Any) -> dict:
+def _as_dict(obj: Any) -> dict[str, Any]:
     """Coerce ``obj`` to a dict.
 
     Args:
         obj (Any): Value to coerce.
 
     Returns:
-        dict: ``obj`` if it's a dict, else an empty dict.
+        dict[str, Any]: ``obj`` if it's a dict, else an empty dict.
     """
     if isinstance(obj, dict):
         return obj
@@ -146,7 +146,7 @@ def _settings_effort_level() -> str | None:
     return None
 
 
-def _resolve_effort(data: dict) -> str:
+def _resolve_effort(data: Any) -> str:
     """Resolve effort: live ``effort.level``, else ``$CLAUDE_EFFORT``, else settings.
 
     Claude Code omits ``effort`` from the statusline payload when the current
@@ -165,11 +165,12 @@ def _resolve_effort(data: dict) -> str:
     return "?"
 
 
-def extract_status_info(data: dict) -> Status:
+def extract_status_info(data: Any) -> Status:
     """Build a ``Status`` from a statusline payload.
 
     Args:
-        data (dict): Parsed JSON payload; every field is junk-tolerant.
+        data (Any): Parsed JSON payload — usually a dict, but any JSON value
+            is tolerated; every field is junk-tolerant.
 
     Returns:
         Status: The extracted status.

@@ -7,7 +7,7 @@ import pytest
 from statusline import rendering
 from statusline.config import BAR_WIDTH, EMPTY, FILL, LABELS, VS16
 from statusline.models import RateLimitUsage, Status
-from tests.conftest import assert_dividers_align
+from tests.helpers import assert_dividers_align
 
 
 class TestDisplayWidth:

@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import sys
 from json import JSONDecodeError
+from typing import Any
 
 from statusline.errors import handle_exception
 from statusline.parsing import extract_status_info
@@ -12,11 +13,12 @@ from statusline.rendering import render_grid
 
 
 @handle_exception({}, JSONDecodeError, OSError)
-def load_data() -> dict:
+def load_data() -> Any:
     """Load a statusline payload from stdin.
 
     Returns:
-        dict: The parsed payload, or ``{}`` on malformed input.
+        Any: The parsed JSON payload (usually a dict, but any valid JSON
+            value passes through), or ``{}`` on malformed input.
 
     Examples:
         load_data()

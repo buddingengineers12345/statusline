@@ -53,6 +53,8 @@ repo is the portable/minimal copy for tests and standalone use).
 ```bash
 python3 -m pytest tests/ -v
 python3 grid.py < sample.json
+ruff check src tests grid.py && ruff format --check src tests grid.py
+basedpyright --level error src grid.py tests   # 0 errors expected (package ships py.typed)
 ```
 
 ## PR instructions

@@ -3,34 +3,41 @@
 from __future__ import annotations
 
 import copy
-from typing import TYPE_CHECKING, Any
+import functools
+from typing import TYPE_CHECKING, ParamSpec, TypeVar
 
 if TYPE_CHECKING:
     from collections.abc import Callable
 
+P = ParamSpec("P")
+R = TypeVar("R")
+D = TypeVar("D")
+
 
 def handle_exception(
-    default: Any, *exceptions: type[BaseException]
-) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
+    default: D, *exceptions: type[BaseException]
+) -> Callable[[Callable[P, R]], Callable[P, R | D]]:
     """Decorator that returns a copy of ``default`` instead of raising.
 
     Copies ``default`` to avoid aliasing a shared mutable value across calls.
 
     Args:
-        default (Any): Value to return (copied) when the wrapped function raises.
+        default (D): Value to return (copied) when the wrapped function raises.
         *exceptions (type[BaseException]): Exception types to catch.
 
     Returns:
-        Callable[[Callable[..., Any]], Callable[..., Any]]: A decorator for
-            the target function.
+        Callable[[Callable[P, R]], Callable[P, R | D]]: A decorator for the
+            target function; the wrapped function returns its own result or
+            a copy of ``default``.
 
     Examples:
         @handle_exception(0, ValueError)
         def parse(value): ...
     """
 
-    def decorate(fn: Callable[..., Any]) -> Callable[..., Any]:
-        def wrapper(*args: Any, **kwargs: Any) -> Any:
+    def decorate(fn: Callable[P, R]) -> Callable[P, R | D]:
+        @functools.wraps(fn)
+        def wrapper(*args: P.args, **kwargs: P.kwargs) -> R | D:
             try:
                 return fn(*args, **kwargs)
             except exceptions:
