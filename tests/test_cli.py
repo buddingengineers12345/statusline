@@ -1,7 +1,7 @@
 """Tests for statusline.cli plus end-to-end hostile-payload runs."""
 
 import sys
-from io import StringIO
+from io import BytesIO, StringIO, TextIOWrapper
 
 import pytest
 
@@ -26,6 +26,15 @@ class TestLoadDataAndMain:
         assert "x" in out
 
         monkeypatch.setattr(sys, "stdin", StringIO("{{{"))
+        assert cli.main() == 0
+        assert len(capsys.readouterr().out.rstrip("\n").split("\n")) == 5
+
+    def test_mis_encoded_stdin_degrades(
+        self, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+    ) -> None:
+        monkeypatch.setattr(sys, "stdin", TextIOWrapper(BytesIO(b"\xff\xfe{}"), encoding="utf-8"))
+        assert cli.load_data() == {}
+        monkeypatch.setattr(sys, "stdin", TextIOWrapper(BytesIO(b"\xff\xfe{}"), encoding="utf-8"))
         assert cli.main() == 0
         assert len(capsys.readouterr().out.rstrip("\n").split("\n")) == 5
 

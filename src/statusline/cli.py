@@ -12,13 +12,14 @@ from statusline.parsing import extract_status_info
 from statusline.rendering import render_grid
 
 
-@handle_exception({}, JSONDecodeError, OSError)
+@handle_exception({}, JSONDecodeError, UnicodeDecodeError, OSError)
 def load_data() -> Any:
     """Load a statusline payload from stdin.
 
     Returns:
         Any: The parsed JSON payload (usually a dict, but any valid JSON
-            value passes through), or ``{}`` on malformed input.
+            value passes through), or ``{}`` on malformed or mis-encoded
+            input.
 
     Examples:
         load_data()
