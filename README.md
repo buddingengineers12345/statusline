@@ -6,46 +6,9 @@ A minimal, column-aligned Claude Code statusline — mascot, session state, and 
 
 ## About
 
-A Claude Code statusline is a small local script wired into project or user
-`settings.json` (`statusLine`). In **agentspace**, the SSOT is
-`/home/engineer/agentspace/.claude/settings.json` pointing at
-`statusline/src/main.py` (this repo is the portable/testable copy).
-Claude Code runs it on session updates, piping a JSON blob (model, effort,
-context/rate-limit usage, cwd) to stdin and printing stdout above the input box.
-It costs no API tokens — it's a local process, not a model call.
+Claude Code runs a local script wired in `settings.json` (`statusLine`). It pipes session JSON to stdin and prints a grid to stdout — no API tokens.
 
-This repo ships `src/main.py` (Claude Code entry point) plus supporting modules
-under `src/statusline/` and `sample.json` to try it against.
-
-## Features
-
-- Aligned 3-column grid: braille mascot | labeled state | usage bars, with the `│` dividers staying vertical across all 5 rows
-- Zero runtime deps — stdlib only
-- Pytest suite in `tests/`
-
-## Layout
-
-```
-pyproject.toml          # pytest + ruff config
-sample.json             # example stdin payload
-src/
-├── main.py             # Claude Code entry point (puts src/ on sys.path)
-└── statusline/
-    ├── __init__.py     # public API (Status, extract_status_info, render_grid, ...)
-    ├── __main__.py     # python3 -m statusline (dev only)
-    ├── config.py       # layout constants, labels, mascot, width tables
-    ├── models.py       # Status / ContextUsage / RateLimitUsage
-    ├── errors.py       # handle_exception decorator
-    ├── parsing.py      # payload → Status
-    ├── rendering.py    # Status → grid text
-    └── cli.py          # stdin/stdout entry point
-tests/                  # test_parsing / test_rendering / test_cli
-```
-
-## How it works
-
-- **Contract**: read one JSON object from stdin, print plain text to stdout. No arguments, no network calls.
-- **Alignment**: pad columns by *display width* (emoji = 2 cells, braille = 1, VS16/combining = 0), not `len()`, so the two `│` dividers stay vertical across all 5 rows.
+Entry point: `src/main.py` (no pip install). `pyproject.toml` is for dev tooling (pytest, ruff) only.
 
 ## Installation
 
@@ -59,14 +22,22 @@ tests/                  # test_parsing / test_rendering / test_cli
 }
 ```
 
-No install is needed: `src/main.py` bootstraps `src/` onto `sys.path`.
-
 ## Usage
 
 ```bash
-python3 src/main.py < sample.json
-PYTHONPATH=src python3 -m statusline < sample.json   # dev only
-python3 -m pytest tests/ -v                          # pythonpath=src comes from pyproject.toml
+python3 src/main.py --selfcheck
+python3 src/main.py < assets/sample.json
+python3 -m pytest tests/ -v
+```
+
+## Layout
+
+```
+assets/sample.json      # example stdin payload
+src/main.py             # Claude Code entry point
+src/statusline/         # config, parsing, rendering, cli
+tests/
+pyproject.toml          # pytest + ruff (dev only)
 ```
 
 ## Fields read
@@ -74,21 +45,20 @@ python3 -m pytest tests/ -v                          # pythonpath=src comes from
 | Field | Notes |
 |---|---|
 | `model.id` | default `?` |
-| `effort.level` | live value when the model supports effort; else `$CLAUDE_EFFORT`, else project `.claude/settings.json` `effortLevel`, else `~/.claude/settings.json`, else `?` |
-| `thinking.enabled` | only actual JSON `true` → `on` |
+| `effort.level` | payload → `$CLAUDE_EFFORT` → project/user settings |
+| `thinking.enabled` | only JSON `true` → `on` |
 | `output_style.name` | default `default` |
-| `fast_mode` | only actual JSON `true` → `on` |
+| `fast_mode` | only JSON `true` → `on` |
 | `context_window.used_percentage` | default 0 |
-| `rate_limits.five_hour` / `seven_day` | row blank if absent; supports epoch or ISO `resets_at` |
-| `cwd` | falls back to `workspace.current_dir`, else `?` |
+| `rate_limits.five_hour` / `seven_day` | blank if absent |
+| `session_id`, `cwd` | row 4–5 in usage column |
 
 ## Gotchas
 
-- Haiku (and other models without the effort capability) omit `effort` from stdin — the grid falls back to settings/`$CLAUDE_EFFORT`.
-- Emoji are 2 cells; gear/pencil are 1 cell despite VS16 — label icons compensate.
-- Bar fill uses banker's rounding (`round(2.5) == 2`).
-- Absent vs empty rate-limit objects both hide that usage row.
-- Stdout is not a TTY — do not use `tput cols`; use `$COLUMNS` if needed.
+- Emoji and symbol-block icons (🤖 ⚙️) count as 2 cells; pencil (✍) counts as 1 with a space before and after in the Style label.
+- Through a LiteLLM proxy, 5h/7d bars need bare `anthropic-ratelimit-*` headers forwarded to Claude Code.
+- Bad stdin fails open (exit 0, empty defaults).
+- Bar fill uses banker's rounding.
 
 ## License
 

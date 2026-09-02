@@ -1,10 +1,4 @@
-"""Column-aligned grid statusline for Claude Code.
-
-Reads a statusline JSON payload on stdin and prints a 5-row 3-column grid.
-
-Usage:
-    python3 -m statusline < payload.json
-"""
+"""Column-aligned grid statusline for Claude Code (stdin JSON → stdout grid)."""
 
 from __future__ import annotations
 

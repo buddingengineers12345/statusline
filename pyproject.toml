@@ -127,3 +127,4 @@ max-complexity = 10
     "D103",
     "D104",
 ]
+"src/statusline/cli.py" = ["S101", "PLR2004"]  # --selfcheck uses assert-based smoke tests

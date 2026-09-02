@@ -1,1 +1,0 @@
-/home/engineer/agentspace/.claude/rules/data-flow-organization.md

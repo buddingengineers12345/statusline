@@ -93,6 +93,9 @@ internal/
 confidential/
 
 # ── Agent / Claude local (machine-local, never commit) ──
+.claude/
+.mcp.json
+.cursor/
 .claude/skills/
 .claude/todos/
 .claude/worktrees/

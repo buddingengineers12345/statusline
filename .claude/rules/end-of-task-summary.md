@@ -1,1 +1,0 @@
-/home/engineer/agentspace/.claude/rules/end-of-task-summary.md

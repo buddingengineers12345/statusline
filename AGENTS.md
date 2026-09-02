@@ -12,7 +12,7 @@ The code is organized under `src/` (`statusline/` modules: `config` / `models` /
 ## Setup commands
 
 ```bash
-python3 src/main.py < sample.json
+python3 src/main.py < assets/sample.json
 python3 -m pytest tests/ -v      # pythonpath=src via pyproject.toml
 ```
 
@@ -51,14 +51,14 @@ copy was removed 2026-09-02; this repo is SSOT).
 
 ```bash
 python3 -m pytest tests/ -v
-python3 src/main.py < sample.json
+python3 src/main.py < assets/sample.json
 ruff check src tests && ruff format --check src tests
 basedpyright --level error src tests   # 0 errors expected (package ships py.typed)
 ```
 
 ## PR instructions
 
-- Do not commit generated noise (`__pycache__`, `.ruff_cache`, `*.egg-info`); this repo is `src/` + `sample.json` + `tests/` + docs.
+- Do not commit generated noise (`__pycache__`, `.ruff_cache`, `*.egg-info`); this repo is `src/` + `assets/` + `tests/` + docs.
 - Prefer small diffs; document gotchas (emoji width, effort fallback, absent rate-limit fields) when behavior changes.
 - Conventional commits; squash-merge to the default branch.
 

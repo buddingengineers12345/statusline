@@ -5,7 +5,7 @@ from datetime import datetime
 import pytest
 
 from statusline import rendering
-from statusline.config import BAR_WIDTH, EMPTY, FILL, LABELS, VS16
+from statusline.config import BAR_WIDTH, EMPTY, FILL, VS16
 from statusline.models import RateLimitUsage, Status
 from tests.helpers import assert_dividers_align
 
@@ -27,11 +27,11 @@ class TestDisplayWidth:
         assert rendering.display_width("☀") == 2
         assert rendering.display_width("☀️") == 2
 
-    def test_gear_and_pencil_two_cells(self) -> None:
-        assert rendering.display_width("✍") == 2
+    def test_pencil_one_cell_gear_two_cells(self) -> None:
+        assert rendering.display_width("✍") == 1
+        assert rendering.display_width("✍️") == 1
         assert rendering.display_width("⚙") == 2
         assert rendering.display_width("⚙️") == 2
-        assert rendering.display_width("✍️") == 2
 
     def test_east_asian_wide_char_two_cells(self) -> None:
         assert rendering.display_width("中") == 2
@@ -52,9 +52,10 @@ class TestDisplayWidth:
 
 
 class TestLabelIconWidths:
-    def test_all_icons_consume_equal_space(self) -> None:
-        widths = {key: rendering.display_width(icon + " ") for key, (icon, _text) in LABELS.items()}
-        assert len(set(widths.values())) == 1, widths
+    def test_style_label_has_space_around_pencil(self) -> None:
+        assert rendering.label_text("style") == " ✍ Style"
+        assert rendering.display_width(rendering.label_text("style")) == 8
+        assert rendering.display_width(rendering.label_text("model")) == 8
 
 
 class TestPad:

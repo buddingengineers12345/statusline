@@ -12,6 +12,7 @@ from typing import TYPE_CHECKING
 from statusline.config import (
     BAR_WIDTH,
     CP_EMOJI_START,
+    CP_NARROW_SYMBOLS,
     CP_SYMBOL_BLOCK,
     DIVIDER,
     EMPTY,
@@ -30,7 +31,7 @@ if TYPE_CHECKING:
 def display_width(text: str) -> int:
     """Compute the terminal cell width of ``text``.
 
-    VS16 and combining marks count 0; gear/pencil count 1; emoji,
+    VS16 and combining marks count 0; pencil (U+270D) counts 1; emoji,
     symbol-block, and CJK-wide characters count 2; everything else counts 1.
 
     Args:
@@ -47,7 +48,9 @@ def display_width(text: str) -> int:
         if ch == VS16 or unicodedata.combining(ch):
             continue
         cp = ord(ch)
-        if (
+        if cp in CP_NARROW_SYMBOLS:
+            width += 1
+        elif (
             cp >= CP_EMOJI_START
             or cp in CP_SYMBOL_BLOCK
             or unicodedata.east_asian_width(ch) in ("W", "F")
@@ -94,6 +97,8 @@ def label_text(key: str) -> str:
         label_text("model")
     """
     icon, text = LABELS[key]
+    if key == "style":
+        return f" {icon} {text}"
     return f"{icon} {text}"
 
 
