@@ -1,6 +1,7 @@
 """Tests for statusline.parsing and statusline.errors: payload -> Status."""
 
 from datetime import datetime
+from pathlib import Path
 
 import pytest
 
@@ -130,6 +131,25 @@ class TestParseStatus:
         monkeypatch.delenv("CLAUDE_EFFORT", raising=False)
         monkeypatch.setattr(parsing, "_settings_effort_level", lambda: "high")
         assert parsing.extract_status_info({}).effort == "high"
+
+    def test_effort_falls_back_to_project_settings(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        """Project effortLevel applies when payload/env omit effort (agentspace posture)."""
+        project = tmp_path / "proj"
+        claude_dir = project / ".claude"
+        claude_dir.mkdir(parents=True)
+        (claude_dir / "settings.json").write_text('{"effortLevel": "medium"}', encoding="utf-8")
+        monkeypatch.delenv("CLAUDE_EFFORT", raising=False)
+        monkeypatch.setattr(parsing, "_settings_effort_level", lambda: None)
+        payload = {"cwd": str(project), "model": {"id": "claude-haiku-4-5"}}
+        assert parsing.extract_status_info(payload).effort == "medium"
+
+    def test_session_id_from_payload(self) -> None:
+        sid = "abc123-session-id"
+        assert parsing.extract_status_info({"session_id": sid}).session_id == sid
+        assert parsing.extract_status_info({}).session_id == "?"
+        assert parsing.extract_status_info({"session_id": ""}).session_id == "?"
 
     def test_full_valid_payload(self) -> None:
         payload = {

@@ -43,12 +43,14 @@ class Status(NamedTuple):
         context: Context-window usage.
         five_hour: 5-hour rate-limit usage, or ``None`` if absent.
         seven_day: 7-day rate-limit usage, or ``None`` if absent.
+        session_id: Claude session id from the statusline payload.
     """
 
     # Text fields
     model: str = "?"
     effort: str = "?"
     style: str = "default"
+    session_id: str = "?"
 
     # Path
     cwd: str = "?"

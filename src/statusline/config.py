@@ -18,13 +18,12 @@ MASCOT = (
     "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀",
 )
 
-# Labels: (icon, text). Gear/pencil are EAW=Neutral (1 cell) despite VS16 —
-# their icons bake in a compensating trailing space so all labels share width.
+# Labels: (icon, text). Icons use standard emoji (2 cells); no baked trailing spaces.
 LABELS = {
     "model": ("🤖", "Model"),
-    "effort": ("⚙️ ", "Effort"),
+    "effort": ("⚙️", "Effort"),
     "thinking": ("🧠", "Extended"),
-    "style": ("✍ ", "Style"),
+    "style": ("✍️", "Style"),
     "fast": ("⚡", "Fast"),
     "context": ("📊", "Context"),
     "five_hour": ("⏳", "5h"),
@@ -32,7 +31,6 @@ LABELS = {
 }
 
 # Unicode width classification (display_width)
-CP_NARROW_SYMBOLS = {0x2699, 0x270D}  # gear, pencil
 CP_EMOJI_START = 0x1F000
 CP_SYMBOL_BLOCK = range(0x2600, 0x27C0)
 VS16 = "️"

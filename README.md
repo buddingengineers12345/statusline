@@ -9,7 +9,7 @@ A minimal, column-aligned Claude Code statusline — mascot, session state, and 
 A Claude Code statusline is a small local script wired into project or user
 `settings.json` (`statusLine`). In **agentspace**, the SSOT is
 `/home/engineer/agentspace/.claude/settings.json` pointing at
-`workspace_ops/status_line/grid.py` (this repo is the portable/testable copy).
+`statusline/grid.py` (this repo is the portable/testable copy).
 Claude Code runs it on session updates, piping a JSON blob (model, effort,
 context/rate-limit usage, cwd) to stdin and printing stdout above the input box.
 It costs no API tokens — it's a local process, not a model call.

@@ -45,6 +45,10 @@ class TestLoadDataAndMain:
         assert cli.main() == 0
         assert len(capsys.readouterr().out.rstrip("\n").split("\n")) == 5
 
+    def test_selfcheck(self, capsys: pytest.CaptureFixture[str]) -> None:
+        assert cli.main(["--selfcheck"]) == 0
+        assert capsys.readouterr().out.strip() == "selfcheck ok"
+
 
 class TestHostilePayloads:
     """Inputs Claude Code should not send — but parse/render must not crash."""

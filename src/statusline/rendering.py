@@ -12,7 +12,6 @@ from typing import TYPE_CHECKING
 from statusline.config import (
     BAR_WIDTH,
     CP_EMOJI_START,
-    CP_NARROW_SYMBOLS,
     CP_SYMBOL_BLOCK,
     DIVIDER,
     EMPTY,
@@ -48,9 +47,7 @@ def display_width(text: str) -> int:
         if ch == VS16 or unicodedata.combining(ch):
             continue
         cp = ord(ch)
-        if cp in CP_NARROW_SYMBOLS:
-            width += 1
-        elif (
+        if (
             cp >= CP_EMOJI_START
             or cp in CP_SYMBOL_BLOCK
             or unicodedata.east_asian_width(ch) in ("W", "F")
@@ -208,7 +205,7 @@ def _usage_rows(status: Status, labels: dict[str, str], label_w: int) -> list[st
         _percent_row(labels["context"], status.context, label_w),
         _limit_row(labels["five_hour"], status.five_hour, "%H:%M", label_w),
         _limit_row(labels["seven_day"], status.seven_day, "%m-%d", label_w),
-        "",
+        f"🆔 {status.session_id}" if status.session_id != "?" else "",
         f"📁 {status.cwd}",
     ]
 

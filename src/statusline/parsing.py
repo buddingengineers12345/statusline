@@ -135,9 +135,9 @@ def _parse_limit(obj: Any) -> RateLimitUsage | None:
 
 
 @handle_exception(None, OSError, JSONDecodeError, TypeError, ValueError)
-def _settings_effort_level() -> str | None:
-    """Read ``effortLevel`` from ``~/.claude/settings.json``, if present."""
-    raw = json.loads(Path.home().joinpath(".claude", "settings.json").read_text(encoding="utf-8"))
+def _effort_from_settings(path: Path) -> str | None:
+    """Read ``effortLevel`` from a ``settings.json`` file, if present."""
+    raw = json.loads(path.read_text(encoding="utf-8"))
     if not isinstance(raw, dict):
         return None
     level = raw.get("effortLevel")
@@ -146,12 +146,50 @@ def _settings_effort_level() -> str | None:
     return None
 
 
+def _settings_effort_level() -> str | None:
+    """Read ``effortLevel`` from ``~/.claude/settings.json``, if present."""
+    return _effort_from_settings(Path.home() / ".claude" / "settings.json")
+
+
+def _project_settings_candidates(data: Any) -> list[Path]:
+    """Project ``.claude/settings.json`` paths (project overrides user global)."""
+    roots: list[Path] = []
+    for key in ("CLAUDE_PROJECT_DIR", "CLAUDE_CODE_PROJECT_DIR"):
+        env_val = (os.environ.get(key) or "").strip()
+        if env_val:
+            roots.append(Path(env_val))
+    data_dict = _as_dict(data)
+    cwd = _nested_get(data_dict, ["cwd"])
+    if not cwd:
+        cwd = _nested_get(data_dict, ["workspace", "current_dir"])
+    if isinstance(cwd, (str, os.PathLike)):
+        roots.append(Path(cwd))
+    seen: set[str] = set()
+    out: list[Path] = []
+    for root in roots:
+        try:
+            resolved = root.resolve()
+        except OSError:
+            continue
+        for parent in (resolved, *resolved.parents):
+            settings_path = parent / ".claude" / "settings.json"
+            key = str(settings_path)
+            if key in seen:
+                break
+            seen.add(key)
+            if settings_path.is_file():
+                out.append(settings_path)
+                break
+    return out
+
+
 def _resolve_effort(data: Any) -> str:
     """Resolve effort: live ``effort.level``, else ``$CLAUDE_EFFORT``, else settings.
 
     Claude Code omits ``effort`` from the statusline payload when the current
     model does not support the effort parameter (e.g. Haiku). Fall back to the
     configured ``effortLevel`` so the grid still reflects the user's setting.
+    After localization, effort lives in project settings, not ``~/.claude``.
     """
     level = _nested_get(data, ["effort", "level"])
     if isinstance(level, str) and level:
@@ -159,6 +197,10 @@ def _resolve_effort(data: Any) -> str:
     env = os.environ.get("CLAUDE_EFFORT", "").strip()
     if env:
         return env
+    for path in _project_settings_candidates(data):
+        configured = _effort_from_settings(path)
+        if configured:
+            return configured
     configured = _settings_effort_level()
     if configured:
         return configured
@@ -201,10 +243,15 @@ def extract_status_info(data: Any) -> Status:
     seven_day_data = _nested_get(data, ["rate_limits", "seven_day"])
     seven_day = _parse_limit(seven_day_data)
 
+    session_id = _nested_get(data, ["session_id"], "?")
+    if not isinstance(session_id, str) or not session_id.strip():
+        session_id = "?"
+
     return Status(
         model=model,
         effort=effort,
         style=style,
+        session_id=session_id,
         cwd=cwd,
         thinking=thinking,
         fast=fast,

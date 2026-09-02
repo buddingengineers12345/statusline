@@ -3,7 +3,8 @@
 
 Claude Code invokes this file directly (``python3 grid.py < payload.json``),
 so it must work without the package being pip-installed: it puts ``src/`` on
-``sys.path`` and delegates to :func:`statusline.cli.main`.
+``sys.path`` and delegates to :func:`statusline.cli.main`. ``--selfcheck``
+passes through.
 """
 
 from __future__ import annotations

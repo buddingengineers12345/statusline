@@ -24,20 +24,20 @@ Wire into Claude Code via the **project** settings (agentspace SSOT:
 {
   "statusLine": {
     "type": "command",
-    "command": "python3 /home/engineer/agentspace/workspace_ops/status_line/grid.py",
+    "command": "python3 /home/engineer/agentspace/statusline/grid.py",
     "refreshInterval": 30
   }
 }
 ```
 
-Live agentspace wiring uses `workspace_ops/status_line/grid.py` (this `statusline/`
-repo is the portable/minimal copy for tests and standalone use).
+Live agentspace wiring uses `statusline/grid.py` directly (the `workspace_ops/status_line/`
+copy was removed 2026-09-02; this repo is SSOT).
 
 ## Code style
 
 - Keep the package stdlib-only (`json`, `os`, `pathlib`, `unicodedata`, `datetime`); no new runtime deps.
 - Module boundaries: constants in `config.py`, types in `models.py`, payload→Status in `parsing.py`, Status→text in `rendering.py`, stdin/stdout in `cli.py`. Don't let rendering read the payload or parsing touch widths.
-- Pad columns by **display width** (emoji = 2, braille = 1, VS16/combining = 0, gear/pencil = 1), not string length.
+- Pad columns by **display width** (emoji = 2, braille = 1, VS16/combining = 0), not string length.
 - Prefer self-evident code over comments that only restate the code.
 
 ## Dev environment tips

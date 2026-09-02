@@ -27,11 +27,11 @@ class TestDisplayWidth:
         assert rendering.display_width("☀") == 2
         assert rendering.display_width("☀️") == 2
 
-    def test_narrow_symbols_one_cell(self) -> None:
-        """Gear/pencil are EAW=Neutral; LABELS bake compensating spaces for this."""
-        assert rendering.display_width("✍") == 1
-        assert rendering.display_width("⚙") == 1
-        assert rendering.display_width("⚙️") == 1
+    def test_gear_and_pencil_two_cells(self) -> None:
+        assert rendering.display_width("✍") == 2
+        assert rendering.display_width("⚙") == 2
+        assert rendering.display_width("⚙️") == 2
+        assert rendering.display_width("✍️") == 2
 
     def test_east_asian_wide_char_two_cells(self) -> None:
         assert rendering.display_width("中") == 2
@@ -69,7 +69,7 @@ class TestPad:
 
     def test_pad_uses_display_width_not_len(self) -> None:
         assert rendering.pad("🧠", 5) == "🧠   "
-        assert rendering.pad("⚙", 4) == "⚙   "  # narrow symbol, not emoji-wide
+        assert rendering.pad("⚙", 4) == "⚙  "  # symbol-block, 2 cells + 2 spaces
 
     def test_pad_nonpositive_width_unchanged(self) -> None:
         assert rendering.pad("test", 0) == "test"
@@ -135,6 +135,12 @@ class TestRenderGrid:
     def test_long_cwd_not_truncated(self) -> None:
         path = "/very/long/path/to/working/directory/for/testing"
         assert path in rendering.render_grid(Status(cwd=path))
+
+    def test_session_id_row_above_cwd(self) -> None:
+        sid = "abc123-session-id"
+        lines = rendering.render_grid(Status(session_id=sid, cwd="/tmp")).split("\n")
+        assert f"🆔 {sid}" in lines[3]
+        assert "📁 /tmp" in lines[4]
 
     def test_snapshot_known_status(self, sample_status: Status) -> None:
         lines = rendering.render_grid(sample_status).split("\n")
