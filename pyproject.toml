@@ -19,9 +19,6 @@ requires-python = ">=3.10"
 license = { text = "MIT" }
 dependencies = []
 
-[project.scripts]
-statusline-grid = "statusline.cli:main"
-
 [tool.setuptools.packages.find]
 where = ["src"]
 

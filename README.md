@@ -9,13 +9,13 @@ A minimal, column-aligned Claude Code statusline — mascot, session state, and 
 A Claude Code statusline is a small local script wired into project or user
 `settings.json` (`statusLine`). In **agentspace**, the SSOT is
 `/home/engineer/agentspace/.claude/settings.json` pointing at
-`statusline/grid.py` (this repo is the portable/testable copy).
+`statusline/src/main.py` (this repo is the portable/testable copy).
 Claude Code runs it on session updates, piping a JSON blob (model, effort,
 context/rate-limit usage, cwd) to stdin and printing stdout above the input box.
 It costs no API tokens — it's a local process, not a model call.
 
-This repo ships the `statusline` package (src layout) plus a zero-install
-`grid.py` launcher and `sample.json` to try it against.
+This repo ships `src/main.py` (Claude Code entry point) plus supporting modules
+under `src/statusline/` and `sample.json` to try it against.
 
 ## Features
 
@@ -26,18 +26,19 @@ This repo ships the `statusline` package (src layout) plus a zero-install
 ## Layout
 
 ```
-pyproject.toml          # packaging + pytest + ruff config
-grid.py                 # zero-install launcher (puts src/ on sys.path)
+pyproject.toml          # pytest + ruff config
 sample.json             # example stdin payload
-src/statusline/
-├── __init__.py         # public API (Status, extract_status_info, render_grid, ...)
-├── __main__.py         # python3 -m statusline
-├── config.py           # layout constants, labels, mascot, width tables
-├── models.py           # Status / ContextUsage / RateLimitUsage
-├── errors.py           # handle_exception decorator
-├── parsing.py          # payload → Status
-├── rendering.py        # Status → grid text
-└── cli.py              # stdin/stdout entry point
+src/
+├── main.py             # Claude Code entry point (puts src/ on sys.path)
+└── statusline/
+    ├── __init__.py     # public API (Status, extract_status_info, render_grid, ...)
+    ├── __main__.py     # python3 -m statusline (dev only)
+    ├── config.py       # layout constants, labels, mascot, width tables
+    ├── models.py       # Status / ContextUsage / RateLimitUsage
+    ├── errors.py       # handle_exception decorator
+    ├── parsing.py      # payload → Status
+    ├── rendering.py    # Status → grid text
+    └── cli.py          # stdin/stdout entry point
 tests/                  # test_parsing / test_rendering / test_cli
 ```
 
@@ -52,21 +53,20 @@ tests/                  # test_parsing / test_rendering / test_cli
 {
   "statusLine": {
     "type": "command",
-    "command": "python3 /path/to/statusline/grid.py",
+    "command": "python3 /path/to/statusline/src/main.py",
     "refreshInterval": 30
   }
 }
 ```
 
-No install is needed: `grid.py` bootstraps `src/` onto `sys.path`. An optional
-`pip install .` also provides a `statusline-grid` console script.
+No install is needed: `src/main.py` bootstraps `src/` onto `sys.path`.
 
 ## Usage
 
 ```bash
-python3 grid.py < sample.json          # zero-install launcher
-PYTHONPATH=src python3 -m statusline < sample.json
-python3 -m pytest tests/ -v            # pythonpath=src comes from pyproject.toml
+python3 src/main.py < sample.json
+PYTHONPATH=src python3 -m statusline < sample.json   # dev only
+python3 -m pytest tests/ -v                          # pythonpath=src comes from pyproject.toml
 ```
 
 ## Fields read
