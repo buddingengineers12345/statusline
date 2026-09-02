@@ -52,10 +52,9 @@ class TestDisplayWidth:
 
 
 class TestLabelIconWidths:
-    def test_style_label_has_space_around_pencil(self) -> None:
-        assert rendering.label_text("style") == " ✍ Style"
-        assert rendering.display_width(rendering.label_text("style")) == 8
-        assert rendering.display_width(rendering.label_text("model")) == 8
+    def test_style_label_no_leading_space(self) -> None:
+        assert rendering.label_text("style") == "✍ Style"
+        assert rendering.display_width("✍") == 1
 
 
 class TestPad:

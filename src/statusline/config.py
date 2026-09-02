@@ -23,7 +23,7 @@ LABELS = {
     "model": ("🤖", "Model"),
     "effort": ("⚙️", "Effort"),
     "thinking": ("🧠", "Extended"),
-    "style": ("✍", "Style"),
+    "style": ("✍ ", "Style"),
     "fast": ("⚡", "Fast"),
     "context": ("📊", "Context"),
     "five_hour": ("⏳", "5h"),

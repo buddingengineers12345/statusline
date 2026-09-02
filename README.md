@@ -55,7 +55,7 @@ pyproject.toml          # pytest + ruff (dev only)
 
 ## Gotchas
 
-- Emoji and symbol-block icons (🤖 ⚙️) count as 2 cells; pencil (✍) counts as 1 with a space before and after in the Style label.
+- Emoji and symbol-block icons (🤖 ⚙️) count as 2 cells; pencil (✍) counts as 1 cell with one space after in the Style label.
 - Through a LiteLLM proxy, 5h/7d bars need bare `anthropic-ratelimit-*` headers forwarded to Claude Code.
 - Bad stdin fails open (exit 0, empty defaults).
 - Bar fill uses banker's rounding.

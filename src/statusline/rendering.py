@@ -97,8 +97,6 @@ def label_text(key: str) -> str:
         label_text("model")
     """
     icon, text = LABELS[key]
-    if key == "style":
-        return f" {icon} {text}"
     return f"{icon} {text}"
 
 
